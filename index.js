@@ -92,7 +92,7 @@ async function getChromeBasedBrowserRecords(paths, browserName, historyTimeLengt
     for (let i = 0; i < paths.length; i++) {
         let newDbPath = path.join(getTempDir(), uuidV4() + ".sqlite");
         newDbPaths.push(newDbPath);
-        let sql = `SELECT title, datetime(last_visit_time/1000000 + (strftime('%s', '1601-01-01')),'unixepoch') last_visit_time, url from urls WHERE DATETIME (last_visit_time/1000000 + (strftime('%s', '1601-01-01')), 'unixepoch')  >= DATETIME('now', '-${historyTimeLength} minutes') group by title, last_visit_time order by last_visit_time`;
+        let sql = `SELECT title, datetime(last_visit_time/1000000 + (strftime('%s', '1601-01-01')),'unixepoch') last_visit_time, url from urls WHERE DATETIME (last_visit_time/1000000 + (strftime('%s', '1601-01-01')), 'unixepoch')  >= DATETIME('now', '-${historyTimeLength} minutes') group by title, last_visit_time order by last_visit_time LIMIT 1000`;
         //Assuming the sqlite file is locked so lets make a copy of it
         fs.copyFileSync(paths[i], newDbPath);
         browserHistory.push(await getHistoryFromDb(newDbPath, sql, browserName));
